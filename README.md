@@ -36,11 +36,21 @@ Key code: `app/models/concerns/checkable.rb` (threshold / incident state machine
 
 ## Run locally
 
-Requirements: Ruby 3.3+, Bundler, PostgreSQL 14+ running locally.
+Tested on Debian trixie with the **system Ruby** (`/usr/bin/ruby`, 3.3.8, apt `ruby-full`) and
+its bundled Bundler 2.5.22, which Debian installs as `bundle3.3`. No version manager and no
+`GEM_HOME` are needed. Gems are installed into the project at `./vendor/bundle`, and the
+setting is stored in `.bundle/config`.
+
+Prerequisites (Debian/Ubuntu): `ruby-full build-essential libpq-dev libyaml-dev postgresql`.
+PostgreSQL must be running and your OS user needs a Postgres role that can create
+databases. For example:
+`sudo service postgresql start && sudo -u postgres createuser -s "$USER"`.
 
 ```bash
-bundle install
-bin/rails db:prepare          # create + migrate
+cd statuspage-rails-demo
+bundle3.3 config set --local path vendor/bundle   # once; use `bundle` instead if that is your Bundler binary
+bundle3.3 install
+bin/rails db:prepare          # create + migrate dev and test databases
 bin/rails db:seed             # 4 demo monitors, 90 days of checks, incidents, 1 subscriber (idempotent)
 
 export ADMIN_PASSWORD='choose-something'   # ADMIN_USERNAME defaults to "admin"
@@ -51,13 +61,28 @@ SOLID_QUEUE_IN_PUMA=1 bin/rails server     # runs web + background checks
 - Admin: http://localhost:3000/admin (basic auth)
 - Captured mail: http://localhost:3000/admin/mail
 
-DB connection can be overridden with `DATABASE_HOST`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `DATABASE_NAME`.
-The seeded "Legacy billing API" points at `http://127.0.0.1:9/health`, so it stays down and keeps its incident open.
+You can override the DB connection with `DATABASE_HOST`, `DATABASE_USERNAME`,
+`DATABASE_PASSWORD` and `DATABASE_NAME`. The seeded "Legacy billing API" points at
+`http://127.0.0.1:9/health`, so it stays down and keeps its incident open.
 
 ## Tests & checks
 
+Verified from a clean environment, with no `GEM_HOME` and no version manager:
+
 ```bash
-bin/rails test               # 47 runs, 174 assertions, 0 failures (last run)
+env -i HOME="$HOME" PATH=/usr/bin:/bin bash -lc '
+  cd statuspage-rails-demo &&
+  bundle3.3 config set --local path vendor/bundle &&
+  bundle3.3 install --quiet &&
+  bin/rails db:prepare &&
+  bin/rails test'
+# => 47 runs, 174 assertions, 0 failures, 0 errors, 0 skips
+```
+
+Individual commands:
+
+```bash
+bin/rails test
 bin/rubocop
 bin/brakeman --no-pager -q
 bin/bundler-audit

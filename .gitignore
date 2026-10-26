@@ -14,3 +14,4 @@
 /config/credentials.yml.enc
 /node_modules
 /coverage
+/vendor/bundle
