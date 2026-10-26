@@ -1,0 +1,4 @@
+<% content_for :title, "Edit #{@monitor.name}" %>
+<h1>Edit <%= @monitor.name %></h1>
+<%= render "form", monitor: @monitor %>
+<p><%= link_to "Back", admin_monitor_path(@monitor) %></p>

@@ -1,0 +1,17 @@
+<article class="incident incident--<%= incident.resolved? ? "resolved" : "active" %>" id="<%= dom_id(incident) %>">
+  <h3><%= incident.title %></h3>
+  <p class="muted">
+    <%= incident.uptime_monitor.name %> ·
+    started <%= l(incident.started_at, format: :short) %> UTC ·
+    <%= incident.resolved? ? "lasted" : "ongoing for" %> <%= distance_of_time_in_words(incident.duration) %>
+  </p>
+  <ol class="timeline">
+    <% incident.updates.each do |update| %>
+      <li>
+        <strong class="timeline__status"><%= update.status.humanize %></strong>
+        <span><%= update.body %></span>
+        <time class="muted" datetime="<%= update.created_at.iso8601 %>"><%= l(update.created_at, format: :short) %> UTC</time>
+      </li>
+    <% end %>
+  </ol>
+</article>

@@ -1,0 +1,10 @@
+<%= turbo_frame_tag "subscription_form" do %>
+  <%= form_with model: subscriber, url: subscriptions_path, class: "subscribe-form" do |form| %>
+    <%= form.label :email, "Email address", class: "visually-hidden" %>
+    <%= form.email_field :email, placeholder: "you@example.com", required: true, autocomplete: "email" %>
+    <%= form.submit "Subscribe", class: "button" %>
+  <% end %>
+  <% if subscriber.errors.any? %>
+    <p class="form-error"><%= subscriber.errors.full_messages.to_sentence %></p>
+  <% end %>
+<% end %>

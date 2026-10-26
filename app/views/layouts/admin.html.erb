@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Admin" %> · <%= page_title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="admin">
+    <nav class="admin-nav">
+      <strong>Admin</strong>
+      <%= link_to "Monitors", admin_monitors_path %>
+      <a href="/admin/mail">Mailbox</a>
+      <%= link_to "Public status page", root_path %>
+    </nav>
+    <main class="container container--wide">
+      <% flash.each do |type, message| %>
+        <p class="flash flash--<%= type %>"><%= message %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

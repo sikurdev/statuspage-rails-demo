@@ -1,0 +1,5 @@
+<section class="card">
+  <h2>Unsubscribe</h2>
+  <p>Stop sending status updates to <strong><%= @subscriber.email %></strong>?</p>
+  <%= button_to "Unsubscribe", subscription_path(@subscriber.token), method: :delete, class: "button button--danger" %>
+</section>

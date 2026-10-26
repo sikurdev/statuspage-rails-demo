@@ -1,0 +1,43 @@
+<% content_for :title, @monitor.name %>
+<header class="page-header">
+  <h1><%= @monitor.name %> <%= status_badge(@monitor.status) %></h1>
+  <div class="actions">
+    <%= button_to "Check now", check_admin_monitor_path(@monitor), class: "button" %>
+    <%= link_to "Edit", edit_admin_monitor_path(@monitor), class: "button button--ghost" %>
+    <%= button_to "Delete", admin_monitor_path(@monitor), method: :delete, class: "button button--danger",
+          form: { data: { turbo_confirm: "Delete #{@monitor.name} and its history?" } } %>
+  </div>
+</header>
+
+<dl class="details">
+  <dt>URL</dt><dd class="mono"><%= @monitor.url %></dd>
+  <dt>Interval</dt><dd><%= @monitor.check_interval_seconds %>s</dd>
+  <dt>Expected status</dt><dd><%= @monitor.expected_status %></dd>
+  <dt>Incident after</dt><dd><%= pluralize(@monitor.failure_threshold, "consecutive failure") %></dd>
+  <dt>Active</dt><dd><%= @monitor.active? ? "yes" : "no" %></dd>
+</dl>
+
+<h2>Recent checks</h2>
+<table class="table">
+  <thead><tr><th>Checked at (UTC)</th><th>Result</th><th>HTTP</th><th>Response time</th><th>Error</th></tr></thead>
+  <tbody>
+    <% @check_results.each do |check| %>
+      <tr>
+        <td><%= l(check.checked_at, format: :short) %></td>
+        <td><%= status_badge(check.status) %></td>
+        <td><%= check.http_status || "—" %></td>
+        <td><%= check.response_time_ms ? "#{check.response_time_ms} ms" : "—" %></td>
+        <td class="mono"><%= check.error %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Incidents</h2>
+<% if @incidents.any? %>
+  <%= render partial: "incidents/incident", collection: @incidents %>
+<% else %>
+  <p class="muted">No incidents.</p>
+<% end %>
+
+<p><%= link_to "Back to monitors", admin_monitors_path %></p>

@@ -1,0 +1,32 @@
+<%= form_with model: monitor, url: monitor.new_record? ? admin_monitors_path : admin_monitor_path(monitor), class: "form" do |form| %>
+  <% if monitor.errors.any? %>
+    <div class="form-error">
+      <ul><% monitor.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <%= form.label :name %>
+  <%= form.text_field :name, required: true %>
+
+  <%= form.label :url, "URL" %>
+  <%= form.url_field :url, required: true, placeholder: "https://example.com/health" %>
+
+  <div class="form__row">
+    <div>
+      <%= form.label :check_interval_seconds, "Check interval (seconds)" %>
+      <%= form.number_field :check_interval_seconds, min: 30, max: 86_400 %>
+    </div>
+    <div>
+      <%= form.label :expected_status, "Expected HTTP status" %>
+      <%= form.number_field :expected_status, min: 100, max: 599 %>
+    </div>
+    <div>
+      <%= form.label :failure_threshold, "Failures before incident" %>
+      <%= form.number_field :failure_threshold, min: 1, max: 20 %>
+    </div>
+  </div>
+
+  <label class="checkbox"><%= form.check_box :active %> Active</label>
+
+  <%= form.submit class: "button" %>
+<% end %>

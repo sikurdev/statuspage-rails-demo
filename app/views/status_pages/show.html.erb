@@ -1,0 +1,63 @@
+<div data-controller="auto-refresh" data-auto-refresh-interval-value="60000">
+  <header class="page-header">
+    <h1><%= page_title %></h1>
+    <a href="#subscribe" class="button button--ghost">Subscribe to updates</a>
+  </header>
+
+  <% overall = @status_page.overall_status %>
+  <section class="overall overall--<%= overall %>" id="overall-status">
+    <%= status_label(overall) %>
+  </section>
+
+  <% if (active = @status_page.active_incidents).any? %>
+    <section class="card">
+      <h2>Active incidents</h2>
+      <%= render partial: "incidents/incident", collection: active %>
+    </section>
+  <% end %>
+
+  <section class="card" id="monitors">
+    <div class="card__header">
+      <h2>Services</h2>
+      <span class="muted">Uptime over the past <%= StatusPage::DAYS %> days</span>
+    </div>
+    <% @status_page.monitors.each do |monitor| %>
+      <div class="monitor" id="<%= dom_id(monitor) %>">
+        <div class="monitor__head">
+          <span class="monitor__name"><%= monitor.name %></span>
+          <%= status_badge(monitor.status) %>
+        </div>
+        <div class="bars" role="img" aria-label="Daily uptime for <%= monitor.name %>">
+          <% @status_page.bars_for(monitor).each do |bar| %>
+            <span class="bar bar--<%= bar.level %>" title="<%= bar.label %>"></span>
+          <% end %>
+        </div>
+        <div class="monitor__foot muted">
+          <span><%= StatusPage::DAYS %> days ago</span>
+          <span><%= format_uptime(@status_page.uptime_for(monitor)) %> uptime</span>
+          <span>Today</span>
+        </div>
+      </div>
+    <% end %>
+    <% if @status_page.monitors.empty? %>
+      <p class="muted">No monitors configured yet.</p>
+    <% end %>
+  </section>
+
+  <section class="card">
+    <h2>Past incidents</h2>
+    <% if (past = @status_page.past_incidents).any? %>
+      <%= render partial: "incidents/incident", collection: past %>
+    <% else %>
+      <p class="muted">No incidents in the past <%= StatusPage::DAYS %> days.</p>
+    <% end %>
+  </section>
+
+  <section class="card" id="subscribe">
+    <h2>Get notified</h2>
+    <p class="muted">Receive an email when an incident is opened or resolved.</p>
+    <%= render "subscriptions/form", subscriber: @subscriber %>
+  </section>
+
+  <footer class="muted footer">Powered by statuspage-rails-demo · updated <%= l(Time.current, format: :short) %> UTC</footer>
+</div>

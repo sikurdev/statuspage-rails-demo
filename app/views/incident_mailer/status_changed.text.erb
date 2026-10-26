@@ -1,0 +1,9 @@
+<%= @incident.title %>
+
+<%= @update.status.humanize %>: <%= @update.body %>
+
+Started: <%= l(@incident.started_at, format: :long) %> UTC<% if @incident.resolved? %>
+Resolved: <%= l(@incident.resolved_at, format: :long) %> UTC<% end %>
+
+Status page: <%= root_url %>
+Unsubscribe: <%= unsubscribe_subscription_url(@subscriber.token) %>
