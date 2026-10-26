@@ -1,0 +1,9 @@
+api_investigating:
+  incident: api_outage
+  status: investigating
+  body: API failed 2 consecutive checks.
+
+website_resolved:
+  incident: website_past
+  status: resolved
+  body: Website is responding normally again.

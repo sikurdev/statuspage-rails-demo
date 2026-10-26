@@ -1,0 +1,25 @@
+website_ok:
+  uptime_monitor: website
+  status: up
+  http_status: 200
+  response_time_ms: 120
+  checked_at: <%= 2.minutes.ago.to_fs(:db) %>
+
+website_yesterday_down:
+  uptime_monitor: website
+  status: down
+  http_status: 503
+  error: Expected HTTP 200, got 503
+  checked_at: <%= 1.day.ago.to_fs(:db) %>
+
+api_down_1:
+  uptime_monitor: api
+  status: down
+  error: "Errno::ECONNREFUSED: Connection refused"
+  checked_at: <%= 2.minutes.ago.to_fs(:db) %>
+
+api_down_2:
+  uptime_monitor: api
+  status: down
+  error: "Errno::ECONNREFUSED: Connection refused"
+  checked_at: <%= 1.minute.ago.to_fs(:db) %>

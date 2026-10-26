@@ -1,0 +1,8 @@
+confirmed:
+  email: confirmed@example.com
+  token: confirmedtoken123456789012
+  confirmed_at: <%= 1.day.ago.to_fs(:db) %>
+
+pending:
+  email: pending@example.com
+  token: pendingtoken1234567890123
