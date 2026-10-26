@@ -1,8 +1,20 @@
 #!/bin/bash -e
 
+# Demo convenience: without a SECRET_KEY_BASE, generate an ephemeral one per
+# container start (sessions are reset on restart). Set it explicitly for real use.
+if [ -z "${SECRET_KEY_BASE}" ]; then
+  SECRET_KEY_BASE="$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+  export SECRET_KEY_BASE
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+
+  # Load synthetic demo data once (only when the database has no monitors yet).
+  if [ "${SEED_DEMO_DATA}" == "true" ]; then
+    ./bin/rails runner 'load Rails.root.join("db/seeds.rb") if UptimeMonitor.none?'
+  fi
 fi
 
 exec "${@}"

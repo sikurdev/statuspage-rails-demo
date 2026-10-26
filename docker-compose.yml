@@ -1,0 +1,40 @@
+# One-command demo:  ADMIN_PASSWORD=choose-one docker compose up --build
+# Then open http://localhost:3000 (status page) and http://localhost:3000/admin
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: statuspage
+      # Local-only database that is not published to the host; override if you like.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-statuspage-local}
+      POSTGRES_DB: statuspage_production
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U statuspage -d statuspage_production"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      RAILS_ENV: production
+      DATABASE_HOST: db
+      DATABASE_USERNAME: statuspage
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-statuspage-local}
+      DATABASE_NAME: statuspage_production
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD to protect /admin, e.g. ADMIN_PASSWORD=secret docker compose up}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
+      SOLID_QUEUE_IN_PUMA: "true"   # run the job worker + recurring scheduler inside Puma
+      SEED_DEMO_DATA: "true"
+      APP_HOST: localhost
+      APP_PORT: ${PORT:-3000}
+
+volumes:
+  pgdata:

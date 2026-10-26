@@ -39,3 +39,6 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Docs and screenshots are not needed in the image
+/docs
